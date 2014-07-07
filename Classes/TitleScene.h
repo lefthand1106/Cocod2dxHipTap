@@ -10,9 +10,9 @@
 #define __Cocod2dxHipTap__TitleScene__
 
 #include "cocos2d.h"
+USING_NS_CC;
 
-
-class TitleScene : public cocos2d::Layer
+class TitleScene : public Layer
 {
 private:
     
@@ -22,16 +22,22 @@ private:
     
 public:
     virtual bool init();
-    static cocos2d::Scene* createScene();
+    static Scene* createScene();
     CREATE_FUNC(TitleScene);
-    void setSoundOn();
-    void setSoundOff();
+    //void setSoundOn();
+    //void setSoundOff();
+    void setSoundEffect();
     void goToRanking();
     void toGameScene();
     void toQuestionScene();
     void toInfoScene();
     //virtual void leaderboardViewControllerDidFinish();
-    
+   
+    MenuItem * soundOn;
+    MenuItem * soundOff;
+    MenuItemToggle *toggleItem;
+    int soundEffect;
+
     
 };
 

@@ -12,18 +12,20 @@
 #include "cocos2d.h"
 #include "TitleScene.h"
 
-class QuestionScene : public cocos2d::Layer
+USING_NS_CC;
+
+class QuestionScene : public Layer
 {
     
 private:
     
 public:
     virtual bool init();
-    static cocos2d::Scene* scene();
+    static Scene* scene();
     CREATE_FUNC(QuestionScene);
-    bool onTouchBegan(cocos2d::Touch* touch,cocos2d::Event* event);
-    void onTouchMoved(cocos2d::Touch* touch, cocos2d::Event* event);
-    void onTouchEnded(cocos2d::Touch* touch, cocos2d::Event* event);
+    bool onTouchBegan(Touch* touch,Event* event);
+    void onTouchMoved(Touch* touch, Event* event);
+    void onTouchEnded(Touch* touch, Event* event);
     
 
 };

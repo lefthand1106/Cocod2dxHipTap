@@ -66,17 +66,18 @@ bool TitleScene::init()
     this->addChild(label, 3);
     
     //サウンド設定
-    auto soundOn = MenuItemImage::create("soundon.png", "soundon.png", CC_CALLBACK_0(TitleScene::setSoundOn,this));
+    auto soundOn = MenuItemImage::create("soundon.png", "soundon.png");
     
-    auto soundOff = MenuItemImage::create("soundoff.png", "soundoff.png", CC_CALLBACK_0(TitleScene::setSoundOff, this));
-    
+    auto soundOff = MenuItemImage::create("soundoff.png", "soundoff.png");
+   
+    auto toggleItem = MenuItemToggle::createWithCallback(CC_CALLBACK_0(TitleScene::setSoundEffect, this), soundOn, soundOff, NULL);
     
     auto question = MenuItemImage::create("question.png","question.png", CC_CALLBACK_0(TitleScene::toQuestionScene, this));
      
     auto gamecenter = MenuItemImage::create("gamecenter.png", "gamecenter.png", CC_CALLBACK_0(TitleScene::goToRanking, this));
     
      
-     auto Menu = Menu::create(soundOn,soundOff,question,gamecenter, NULL);
+     auto Menu = Menu::create(toggleItem, question, gamecenter, NULL);
      Menu->setScale(1.0);
      Menu->setPosition(Vec2(winSize.width /3, winSize.height -50 ));
      //Menu->alignItemsHorizontallyWithPadding:15;
@@ -130,6 +131,7 @@ void TitleScene::toInfoScene()
 
 
 //////////////////////サウンド設定start///////////////////////////
+/*
 void TitleScene::setSoundOn(){
     // This will unmute <span id="IL_AD1" class="IL_AD">the sound</span>
     CocosDenshion::SimpleAudioEngine::getInstance()->setEffectsVolume(0);
@@ -139,6 +141,25 @@ void TitleScene::setSoundOff(){
     //This will mute the sound
     CocosDenshion::SimpleAudioEngine::getInstance()->setEffectsVolume(1);
 }
+*/
+void TitleScene::setSoundEffect()
+{
+    if (toggleItem == soundOn )
+    {
+        soundEffect = 0;
+        CocosDenshion::SimpleAudioEngine::getInstance()->setEffectsVolume(0);
+    
+    }
+    else if (toggleItem == soundOff)
+    {
+        soundEffect = 1;
+        CocosDenshion::SimpleAudioEngine::getInstance()->setEffectsVolume(1);
+ 
+    }
+    
+    
+}
+
 //////////////////////サウンド設定end///////////////////////////
 
 

@@ -8,10 +8,10 @@
 
 #include "InfoScene.h"
 
-using namespace cocos2d;
+
 using namespace std;
 
-
+USING_NS_CC;
 
 Scene* InfoScene::scene()
 {
@@ -30,7 +30,7 @@ bool InfoScene::init()
     }
     
     //タッチ可設定
-    this->setTouchEnabled(true);
+    //this->setTouchEnabled(true);
     
     //タッチ処理
     auto listener = EventListenerTouchOneByOne::create();
@@ -79,7 +79,7 @@ bool InfoScene::init()
     
 }
 
-bool InfoScene::onTouchBegan(cocos2d::Touch* touch,cocos2d::Event* event){
+bool InfoScene::onTouchBegan(Touch* touch, Event* event){
     
     //画面をタッチした時の処理
     
@@ -87,13 +87,13 @@ bool InfoScene::onTouchBegan(cocos2d::Touch* touch,cocos2d::Event* event){
     
 }
 
-void InfoScene::onTouchMoved(cocos2d::Touch* touch,cocos2d::Event* event) {
+void InfoScene::onTouchMoved(Touch* touch, Event* event) {
     
     //タッチ中の処理
     
 }
 
-void InfoScene::onTouchEnded(cocos2d::Touch *touch, cocos2d::Event *event){
+void InfoScene::onTouchEnded(Touch *touch, Event *event){
     
     //タッチが終わった時の処理
     Director::getInstance()->replaceScene(TitleScene::createScene());

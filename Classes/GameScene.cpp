@@ -40,15 +40,12 @@ bool GameScene::init()
     colorLayer->setPosition(Vec2( 0, 0));
     this->addChild(colorLayer,0);
     
-    //タッチ可にする
-    this->setTouchEnabled(true);
-    
     // カウンター画像配置start//
     //srand((unsigned)time(NULL));
     int counter = 0;
     auto stringCount = String::create(to_string(counter));
-    countLabel = Label::create(stringCount->getCString(), "Chalkduster", 20);
-    countLabel->setColor(Color3B(255,255,255));
+    countLabel = Label::createWithSystemFont(stringCount->getCString(), "Chalkduster", 60);
+    countLabel->setColor(Color3B(0,0,0));
     countLabel->setPosition(Vec2(winSize.width / 1.15, winSize.height / 1.2));
     this->addChild(countLabel,1);
     // カウンターを生成end//
@@ -61,9 +58,9 @@ bool GameScene::init()
     
     //落下画像配置--start//
     
-   // _men = Array::create();
-   // _women = Array::create();
-   // _menWomen = Array::create();
+    // _men = Array::create();
+    // _women = Array::create();
+    // _menWomen = Array::create();
     
     for (int i = 0; i < 100; i++) {
         auto manIcon = Sprite::create("manhip.png");
@@ -83,15 +80,15 @@ bool GameScene::init()
         _menWomen.pushBack(womanIcon);
     }
     //落下画像をシャッフル
-      std::random_shuffle(_menWomen.begin(), _menWomen.end());
- 
+    std::random_shuffle(_menWomen.begin(), _menWomen.end());
+    
     //落下画像配置--end//
     
     
     //タップ画像配置--start//
     
-    auto menu_item_man = MenuItemImage::create("manhip.png", "manhip.png", CC_CALLBACK_1(GameScene::touchMan, this));
-    auto menu_item_woman = MenuItemImage::create("womanhip.png", "womanhip.png", CC_CALLBACK_1(GameScene::touchWoman, this));
+    auto menu_item_man = MenuItemImage::create("manhip1.png", "manhip2.png", CC_CALLBACK_1(GameScene::touchMan, this));
+    auto menu_item_woman = MenuItemImage::create("womanhip1.png", "womanhip2.png", CC_CALLBACK_1(GameScene::touchWoman, this));
     
     
     auto *tapMenu = Menu::create(menu_item_man, menu_item_woman, NULL);
@@ -110,7 +107,7 @@ bool GameScene::init()
     CocosDenshion::SimpleAudioEngine::getInstance()->preloadEffect("correct.mp3");
     
     //画像落下スピード初期値
-     dmSpeed = 0.1f;
+    dmSpeed = 1.0f;
     
     //画像落下メソッド呼び出し
     dropImages();
@@ -120,10 +117,10 @@ bool GameScene::init()
     
     
     //ゲーむ時間をカウントアップする関数を毎フレーム呼び出す
-   // this->schedule(schedule_selector(GameScene::mesureGametime));
+    // this->schedule(schedule_selector(GameScene::mesureGametime));
     
     // 3秒毎に落下スピードを上げる
-    this->schedule(schedule_selector(GameScene::changeSpeed),1.0f);
+    this->schedule(schedule_selector(GameScene::changeSpeed),3.0f);
     
     //soundreload
     //あらかじめ、音楽データを読み込む
@@ -141,7 +138,8 @@ void GameScene::countUp()
 {
     counter = mancount + womancount;
     //intから文字に変換
-    String* score = String::createWithFormat("%d",counter);
+    auto* score = String::createWithFormat("%d",counter);
+    
     //スコアラベルを生成する
     countLabel->setString(score->getCString());
     
@@ -150,15 +148,15 @@ void GameScene::countUp()
 
 
 ///////////////////タッチ処理start///////////////////
-void GameScene::touchMan(cocos2d::Ref * pSender)
+void GameScene::touchMan(Ref * pSender)
 {
     if(_menWomen.at(IndexCount)){
         //正しい場合
         Sprite* tempSprite;
         tempSprite =_menWomen.at(IndexCount);
-    
+        
         if (tempSprite->getTag() == 1 ) {
-            this->removeChildByTag(1);
+            this->removeChildByTag(1, false);
             int soundID;
             soundID = SimpleAudioEngine::getInstance()->playEffect("correct.mp3");
             mancount++;
@@ -174,7 +172,7 @@ void GameScene::touchMan(cocos2d::Ref * pSender)
     }
 }
 
-void GameScene::touchWoman(cocos2d::Ref* pSender)
+void GameScene::touchWoman(Ref* pSender)
 {
     if ((Sprite*)_menWomen.at(IndexCount)) {
         //正しい場合
@@ -182,7 +180,7 @@ void GameScene::touchWoman(cocos2d::Ref* pSender)
         tempSprite =_menWomen.at(IndexCount);
         
         if (tempSprite->getTag() == 2 ) {
-            this->removeChildByTag(2);
+            this->removeChildByTag(2, false);
             int soundID;
             soundID = SimpleAudioEngine::getInstance()->playEffect("correct.mp3");
             womancount++;
@@ -210,8 +208,7 @@ void GameScene::dropImages()
     //CCObject *obj = NULL;
     //CCARRAY_FOREACH(_menWomen, obj){
     for (int i = 0; i < _menWomen.size(); i++) {
-       
-       // cocos2d::Sprite * dropImage;
+        
         dropImage = _menWomen.at(i);
         dropImage->setPosition(Vec2(winSize.width / 2, winSize.height + 100));
         this->addChild(dropImage, 4);
@@ -221,7 +218,7 @@ void GameScene::dropImages()
         
         auto moveTo = MoveTo::create(15.0f, Point(winSize.width / 2, 60));
         moveTo->setTag(20);
-      
+        
         //Speed* speed = Speed::create((Sequence::create(delayM, moveTo, NULL)), dmSpeed);
         auto sequence = Sequence::create(delayM, moveTo, NULL);
         
@@ -241,8 +238,8 @@ void GameScene::update(float delta)
 {
     checkForCollision();
     //log("dropimage.dmSpeed:%f", static_cast<Speed*>(Speed->dropImage)));
-
-
+    
+    
 }
 ///////////////////アップロード処理start///////////////////
 
@@ -251,15 +248,16 @@ void GameScene::update(float delta)
 
 void GameScene::checkForCollision()
 {
-    float lineIconSize = line->getContentSize().width;
-    float manWomanImageSize =_menWomen.at(199)->getContentSize().width;
-   
+    float lineIconSize = line->getTexture()->getContentSize().width / 2;
+    Sprite* var = _menWomen.back();
+    float manWomanImageSize =var->getContentSize().width / 2;
+    
     float lineCollisionRadius = lineIconSize * 0.1f;
     float manWomanIconCollisionRadius = manWomanImageSize * 0.4f;
-   
+    
     float maxCollisionDistance = lineCollisionRadius + manWomanIconCollisionRadius;
     
-    int numMenWomen = sizeof(_menWomen);
+    long numMenWomen = _menWomen.size();
     for (int i = 0; i < numMenWomen; i++) {
         dropImage = _menWomen.at(i);
         if (dropImage->getNumberOfRunningActions() == 0)
@@ -267,14 +265,14 @@ void GameScene::checkForCollision()
             continue;
         }
         
-        float actualDistance = ccpDistance(line->getPosition(), dropImage->getPosition());
+        float actualDistance =(line->getPosition().getDistance(dropImage->getPosition()));
         
         if (actualDistance < maxCollisionDistance) {
             SimpleAudioEngine::getInstance()->playEffect("wrong.mp3");
             
             gameover();
         }
-    
+        
     }
 }
 
@@ -286,6 +284,7 @@ void GameScene::gameover()
 {
     this->removeAllChildren();
     this->unscheduleAllSelectors();
+    this->stopAllActions();
     
     //gameover画面
     Size winSize =Director::getInstance()->getVisibleSize();
@@ -294,7 +293,7 @@ void GameScene::gameover()
     this->addChild(gameover,4);
     
     //結果表示
-    auto numberString = String::createWithFormat("男が：%d、女が%d。", mancount,womancount);
+    auto numberString = String::createWithFormat("猿:%d 豚:%d \n合計:%d", mancount,womancount,counter);
     auto resultLabel = LabelTTF::create(numberString->getCString(), "Arial Rounded MT Bold", 40.0);
     resultLabel->setColor(Color3B(0, 0, 0));
     resultLabel->setPosition(Vec2(winSize.width /2 , winSize.height/2 ));
@@ -311,10 +310,10 @@ void GameScene::gameover()
     
     auto resultMenu = Menu::create(goTitle,reStart, NULL);
     resultMenu->setScale(1.0);
-    resultMenu->setPosition(Vec2(winSize.width /2, winSize.height / 2 - resultLabel->getContentSize().height * 7));
+    resultMenu->setPosition(Vec2(winSize.width /2, winSize.height / 3));
     resultMenu->alignItemsHorizontallyWithPadding(40);
     gameover->addChild(resultMenu);
-
+    
 }
 ///////////////////ゲームオーバー処理end///////////////////
 
@@ -323,7 +322,7 @@ void GameScene::gameover()
 void GameScene::goTitleButton()
 {
     Director::getInstance()->replaceScene(TitleScene::createScene());
-   // Director::getInstance()->popScene();
+    // Director::getInstance()->popScene();
 }
 
 void GameScene::tapRetryButton()
@@ -339,30 +338,19 @@ void GameScene::tapRetryButton()
 
 
 ///////////////////落下画像スピード変更処理start///////////////////
+
 void GameScene::changeSpeed(float delta)
 {
     for (auto dropImage : _menWomen) {
         auto speed = static_cast<Speed*>(dropImage->getActionByTag(30));
-    speed->setSpeed(dmSpeed);
-      }
-    dmSpeed = dmSpeed + 0.2f;
-    log("dmSpeed:%f",dmSpeed);
-   // log("dmSpeed:%f",Speed( dropImage->getSpriteFrame());
-    
-}
-///////////////////落下画像スピード変更処理end///////////////////
-
-
-/*
-///////////////////落下画像スピード変更処理start///////////////////
-- (void)changeSpeed
-{
-    for (dropImage in menWomen) {
-        CCSpeed *speed = (CCSpeed*)[dropImage getActionByTag:30];
-        speed.speed = dmSpeed;
+        speed->setSpeed(dmSpeed);
     }
     dmSpeed = dmSpeed + 0.2f;
+    
+    log("dmSpeed:%f",dmSpeed);
+    
 }
+
+
 ///////////////////落下画像スピード変更処理end///////////////////
-*/
 
